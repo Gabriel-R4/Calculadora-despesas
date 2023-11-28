@@ -43,7 +43,7 @@ const ExpenseCalculator = () => {
 
   return (
     <div className="container">
-      <h2>Expense Calculator</h2>
+      <h2> Calculadora de Despesas</h2>
       <form onSubmit={addExpense}>
         <label>
           Nome:
