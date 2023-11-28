@@ -7,7 +7,8 @@ const ExpenseCalculator = () => {
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("");
   const [payPer, setPayPer] = useState("");
-  const [addedExpenses, setAddedExpenses] = useState([]);
+  const [expenseHistory, setExpenseHistory] = useState([]);
+  const [incomeHistory, setIncomeHistory] = useState([]);
 
   useEffect(() => {
     const storedExpenses = localStorage.getItem("expenses");
@@ -18,7 +19,10 @@ const ExpenseCalculator = () => {
 
   useEffect(() => {
     localStorage.setItem("expenses", JSON.stringify(expenses));
-    setAddedExpenses(expenses);
+    const expensesHistory = expenses.filter((expense) => expense.type === "Expense");
+    const incomeHistory = expenses.filter((expense) => expense.type === "Income");
+    setExpenseHistory(expensesHistory);
+    setIncomeHistory(incomeHistory);
   }, [expenses]);
 
   const addExpense = (e) => {
@@ -31,19 +35,11 @@ const ExpenseCalculator = () => {
     setPayPer("");
   };
 
-  const totalExpenses = expenses.reduce((total, expense) => {
-    if (expense.type === "Expense") {
-      return total + parseFloat(expense.amount);
-    }
-    return total;
-  }, 0);
-
-  const totalIncome = expenses.reduce((total, expense) => {
-    if (expense.type === "Income") {
-      return total + parseFloat(expense.amount);
-    }
-    return total;
-  }, 0);
+  const deleteExpense = (index, expenseType) => {
+    const updatedExpenses = [...expenses];
+    updatedExpenses.splice(index, 1);
+    setExpenses(updatedExpenses);
+  };
 
   return (
     <div className="container">
@@ -85,15 +81,23 @@ const ExpenseCalculator = () => {
         </label>
         <button type="submit">Adicionar</button>
       </form>
-      <h3>Total Despesas: {totalExpenses}</h3>
-      <h3>Total Receita: {totalIncome}</h3>
-      <h3>Total Lucro: {totalIncome - totalExpenses}</h3>
 
-      <h3>List of Added Expenses:</h3>
+      <h3>Despesas:</h3>
       <ul>
-        {addedExpenses.map((expense, index) => (
+        {expenseHistory.map((expense, index) => (
           <li key={index}>
-            Name: {expense.name}, Amount: {expense.amount}, Type: {expense.type}, Pay Per: {expense.payPer}
+            Name: {expense.name}, Amount: {expense.amount}, Pay Per: {expense.payPer}
+            <button onClick={() => deleteExpense(index, "Expense")}>Excluir</button>
+          </li>
+        ))}
+      </ul>
+
+      <h3>Receitas:</h3>
+      <ul>
+        {incomeHistory.map((income, index) => (
+          <li key={index}>
+            Name: {income.name}, Amount: {income.amount}, Pay Per: {income.payPer}
+            <button onClick={() => deleteExpense(index, "Income")}>Excluir</button>
           </li>
         ))}
       </ul>
@@ -102,4 +106,3 @@ const ExpenseCalculator = () => {
 };
 
 export default ExpenseCalculator;
-
